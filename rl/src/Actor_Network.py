@@ -27,7 +27,7 @@ class Actor_Network(object):
         self.gamma = 0.95
         self.tau = tau
         self.buffer_size = 5000
-        self.hidden_dim = 300
+        self.hidden_dim = 32
 
         # replay buuffer
         self.replay_buffer = Replay_Buffer(self.buffer_size)
@@ -44,6 +44,9 @@ class Actor_Network(object):
         # optimizer & run
         self.optimize = tf.train.AdamOptimizer(self.lr).apply_gradients(grads)
         self.sess.run(tf.initialize_all_variables())
+
+        self.writer = tf.summary.FileWriter("./logs", graph=tf.get_default_graph())
+        self.merge_op = tf.summary.merge_all()
 
     def create_actor(self):
         obs_in = Input(shape = [self.obs_dim])  # 3 states

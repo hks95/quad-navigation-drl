@@ -23,16 +23,29 @@ class Environment():
         self.gazebo = gazebo.GazeboInterface()
         self.running_step = 0.05  # Convert to ros param
         self.max_incl = np.pi/2
-        self.max_altitude = 5.0
-        self.min_altitude = 0.5
+        
         self.vel_min = -2.0
         self.vel_max = 2.0
         self.goalPos = [0.0, -5.0, 2.0]
+        self.goal_threshold = 1
+        self.crash_reward = -20
+        self.goal_reward = 20
 
         self.num_states = 3
         self.num_actions = 3
 
+        self.max_altitude = 5.0
+        self.min_altitude = 0.5
+
+        self.max_x =  10.0
+        self.min_x = -10.0
+
+        self.max_y =  10.0
+        self.min_y = -10.0
+
         self.debug = debug
+
+        self.prev_state = []
 
         # self.plotState = np.zeros((self.num_states,))
 
@@ -71,6 +84,8 @@ class Environment():
         nextState = [pose_.position.x, pose_.position.y, pose_.position.z]
         self.plotState = np.vstack((self.plotState, np.asarray(nextState)))
 
+        self.prev_state = nextState
+
         return nextState, reward, isTerminal, []
 
     def _reset(self):
@@ -90,6 +105,7 @@ class Environment():
 
             initState = [initStateData.pose.pose.position.x, initStateData.pose.pose.position.y, initStateData.pose.pose.position.z]
             self.plotState = np.asarray(initState)
+            self.prev_state = initState
             # 5th: pauses simulation
             self.gazebo.pauseSim()
 
@@ -157,28 +173,41 @@ class Environment():
 	# TODO: Change the error to weight the z_error higher
 
         reward = 0
+        reachedGoal = False
 
         error = self._distance(poseData)
+
+        currentPos = [poseData.position.x, poseData.position.y, poseData.position.z]
         
         if self.debug:
             print('distance from goal: {}'.format(error))
         # reward += -error
-        reward += 10/float(1 + error)
+
+        if error < self.goal_threshold:
+            reward += self.goal_reward
+            reachedGoal = True
+        
+        else:
+            # reward += -error
+            # reward += 10/float(1 + error)
+            # Add other rewards here
+            reward += np.linalg.norm(np.subtract(self.prev_state, self.goalPos)) - np.linalg.norm(np.subtract(currentPos, self.goalPos))
+
 
 	# TODO: Probably need to make a 3D equivalent of this
-        angletoGoal = np.arctan2(np.abs(poseData.position.y - self.goalPos[1]), np.abs(poseData.position.x - self.goalPos[2]))
-        currentAngle = np.arctan2(velData.vector.y, velData.vector.x)
+        # angletoGoal = np.arctan2(np.abs(poseData.position.y - self.goalPos[1]), np.abs(poseData.position.x - self.goalPos[2]))
+        # currentAngle = np.arctan2(velData.vector.y, velData.vector.x)
 
-        # if self.debug:
-            # print('arctan2({},{}), arctan2({},{})'.format(np.abs(poseData.position.y - self.goalPos[1]), np.abs(poseData.position.x - self.goalPos[2]), velData.vector.y, velData.vector.x))
-            # print('angletoGoal: {}, currentAngle: {}'.format(angletoGoal, currentAngle))
+        # # if self.debug:
+        #     # print('arctan2({},{}), arctan2({},{})'.format(np.abs(poseData.position.y - self.goalPos[1]), np.abs(poseData.position.x - self.goalPos[2]), velData.vector.y, velData.vector.x))
+        #     # print('angletoGoal: {}, currentAngle: {}'.format(angletoGoal, currentAngle))
 
-        if(angletoGoal - np.pi/6 < currentAngle < angletoGoal + np.pi/6):
-            reward += 1
-        else:
-            reward -= 5
+        # if(angletoGoal - np.pi/6 < currentAngle < angletoGoal + np.pi/6):
+        #     reward += 1
+        # else:
+        #     reward -= 5
 
-        return reward
+        return reward, reachedGoal
 
     def quaternion_to_euler_angle(self, x, y, z, w):
         ysqr = y * y
@@ -212,13 +241,20 @@ class Environment():
         pitch_bad = not(-self.max_incl < pitch < self.max_incl)
         roll_bad = not(-self.max_incl < roll < self.max_incl)
         altitude_bad = poseData.position.z > self.max_altitude or poseData.position.z < self.min_altitude
+        x_bad = poseData.position.x > self.max_x or poseData.position.x < self.min_x
+        y_bad = poseData.position.y > self.max_y or poseData.position.y < self.min_y
         # print('motorData.on: {}'.format(motorData.on))  # MotorData message doesn't really work
-        if altitude_bad or pitch_bad or roll_bad:
-            rospy.loginfo ("(Terminating Episode: Unstable quad) >>> ("+str(altitude_bad)+","+str(pitch_bad)+","+str(roll_bad)+")")
+        
+        if altitude_bad or pitch_bad or roll_bad or x_bad or y_bad:
+            rospy.loginfo ("(Terminating Episode: Unstable quad) >>> ("+str(altitude_bad)+","+str(pitch_bad)+","+str(roll_bad)+","+str(x_bad)+","+str(y_bad)+")")
             done = True
-            reward = -200  # TODO: Scale this down?
+            reward = self.crash_reward  # TODO: Scale this down?
+
         else:  # TODO: Should we get a reward if we terminate?
-            reward = self.getReward(poseData, imuData, velData)
+            reward, reachedGoal = self.getReward(poseData, imuData, velData)
+            if reachedGoal:
+                print('Reached Goal!')
+                done = True
 
         if self.debug:
             print('Step Reward: {}'.format(reward))

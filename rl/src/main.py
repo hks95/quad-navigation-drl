@@ -24,7 +24,7 @@ class OU(object):
         return theta * (mu - x) + sigma * np.random.randn(1)
 
 
-def play_game(train_indicator = 1, debug=True):
+def play_game(train_indicator = 1, debug=False):
 
     env = environment.Environment(debug)  # Rohit's custom environment
 
@@ -89,8 +89,9 @@ def play_game(train_indicator = 1, debug=True):
                 break
             
             step += 1
-            print('--------------------------------')
-            print('step: {}'.format(step))
+            if debug:
+                print('--------------------------------')
+                print('step: {}'.format(step))
 
             loss = 0
             epsilon -= 1.0/explore
@@ -111,6 +112,7 @@ def play_game(train_indicator = 1, debug=True):
 
             s_t1, r_t, done, _ = env._step(a_t[0])
             s_t1 = np.asarray(s_t1)
+
 
             # add to replay buffer
             replay_buffer.add(s_t, a_t[0], r_t, s_t1, done)
@@ -142,6 +144,9 @@ def play_game(train_indicator = 1, debug=True):
 
             total_reward += r_t
             s_t = s_t1
+        
+        summary = tf.Summary(value=[tf.Summary.Value(tag="Mean Rewards", simple_value=total_reward),])
+        actor.writer.add_summary(summary, e)
 
         if np.mod(e, 3) == 0:
             if (train_indicator):
@@ -193,4 +198,4 @@ if __name__ == "__main__":
     rospy.init_node('quad', anonymous=True)
     train_indicator = 1  # Training = 1, Test = 0
     debug = True  # If you want debugging print statements
-    play_game()
+    play_game(train_indicator, debug)
