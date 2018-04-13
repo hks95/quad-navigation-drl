@@ -41,14 +41,14 @@ def play_game(train_indicator = 1, debug=False):
     vision = False
 
     explore = 100000.
-    eps_count = 2000
+    eps_count = 1000
     max_steps = 100000
     reward = 0
     done = False
     epsilon = 1
     indicator = 0
 
-    plot_state = True
+    plot_state = False
     plot_reward = True
 
     episode_rewards = []
@@ -89,7 +89,7 @@ def play_game(train_indicator = 1, debug=False):
                 break
             
             step += 1
-            if debug:
+            if False: # debug:
                 print('--------------------------------')
                 print('step: {}'.format(step))
 
@@ -112,7 +112,6 @@ def play_game(train_indicator = 1, debug=False):
 
             s_t1, r_t, done, _ = env._step(a_t[0])
             s_t1 = np.asarray(s_t1)
-
 
             # add to replay buffer
             replay_buffer.add(s_t, a_t[0], r_t, s_t1, done)
@@ -159,7 +158,8 @@ def play_game(train_indicator = 1, debug=False):
                 with open("criticmodel.json", "w") as outfile:
                     json.dump(critic.model.to_json(), outfile)
 
-        print('episode: ', e, ' total rewards: ', total_reward)
+        print('episode: {}, num_steps: {}, total rewards: {:.2f}, final state: ({:.2f},{:.2f},{:.2f})'.format(e, step, total_reward, s_t[0], s_t[1], s_t[2]))
+
         episode_rewards.append(total_reward)
 
         ############# Plotting states ############

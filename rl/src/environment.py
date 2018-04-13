@@ -43,7 +43,7 @@ class Environment():
         self.max_y =  10.0
         self.min_y = -10.0
 
-        self.debug = debug
+        self.debug = False # debig
 
         self.prev_state = []
 
@@ -246,7 +246,9 @@ class Environment():
         # print('motorData.on: {}'.format(motorData.on))  # MotorData message doesn't really work
         
         if altitude_bad or pitch_bad or roll_bad or x_bad or y_bad:
-            rospy.loginfo ("(Terminating Episode: Unstable quad) >>> ("+str(altitude_bad)+","+str(pitch_bad)+","+str(roll_bad)+","+str(x_bad)+","+str(y_bad)+")")
+            if self.debug:
+                rospy.loginfo "(Terminating Episode: Unstable quad) >>> ("+str(altitude_bad)+","+str(pitch_bad)+","+str(roll_bad)+","+str(x_bad)+","+str(y_bad)+")")
+            
             done = True
             reward = self.crash_reward  # TODO: Scale this down?
 
@@ -279,7 +281,9 @@ class Environment():
         msg.linear.z = 0.0
         self.pub.publish(msg)
 
-        print('Take-off sequence completed')
+        if self.debug:
+            print('Take-off sequence completed')
+        
         return
 
 
