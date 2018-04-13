@@ -26,7 +26,7 @@ class Critic_Network(object):
         self.bs = batch_size 
         self.tau = tau
         self.buffer_size = 5000
-        self.hidden_dim = 300
+        self.hidden_dim = 32
 
         K.set_session(sess)
 

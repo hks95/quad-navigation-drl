@@ -27,7 +27,7 @@ class Actor_Network(object):
         self.gamma = 0.95
         self.tau = tau
         self.buffer_size = 5000
-        self.hidden_dim = 300
+        self.hidden_dim = 32
 
         # replay buuffer
         self.replay_buffer = Replay_Buffer(self.buffer_size)
