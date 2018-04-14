@@ -27,7 +27,7 @@ class Environment():
 		self.vel_min = -2.0
 		self.vel_max = 2.0
 		self.goalPos = [0.0, -5.0, 2.0]
-		self.goal_threshold = 1
+		self.goal_threshold = 0.5
 		self.crash_reward = -20
 		self.goal_reward = 20
 
@@ -185,7 +185,8 @@ class Environment():
 			reachedGoal = True
 		
 		else:
-			reward = reward + 10/(1+error)
+			# pdb.set_trace()
+			reward = reward + min(1/(error),10) #100 is clipping value
 			# reward = 10
 			reachedGoal = False
 			# reward += -error
@@ -244,7 +245,7 @@ class Environment():
 		x_bad = poseData.position.x > self.max_x or poseData.position.x < self.min_x
 		y_bad = poseData.position.y > self.max_y or poseData.position.y < self.min_y
 		# print('motorData.on: {}'.format(motorData.on))  # MotorData message doesn't really work
-		
+		# print('------------------------------------')
 		if altitude_bad or pitch_bad or roll_bad or x_bad or y_bad:
 			rospy.loginfo ("(Terminating Episode: Unstable quad) >>> ("+str(altitude_bad)+","+str(pitch_bad)+","+str(roll_bad)+","+str(x_bad)+","+str(y_bad)+")")
 			done = True
@@ -278,8 +279,8 @@ class Environment():
 
 		msg.linear.z = 0.0
 		self.pub.publish(msg)
-
-		print('Take-off sequence completed')
+		if self.debug:
+			print('Take-off sequence completed')
 		return
 
 
