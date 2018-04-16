@@ -29,7 +29,7 @@ class Environment():
         self.goalPos = [0.0, -5.0, 2.0]
         self.goal_threshold = 1
         self.crash_reward = -5
-        self.goal_reward = 5
+        self.goal_reward = 20
 
         self.num_states = 3
         self.num_actions = 3

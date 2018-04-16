@@ -34,7 +34,7 @@ def train_quad(debug=True):
 
     buffer_size = 5000
     batch_size = 32
-    gamma = 0.95
+    gamma = 0.98
     tau = 0.001
 
     np.random.seed(1337)
@@ -210,7 +210,7 @@ def test_quad(debug = True):
     obs_dim = env.num_states
     act_dim = env.num_actions
 
-    gamma = 0.95
+    gamma = 0.98
     tau = 0.001
 
     vision = False
