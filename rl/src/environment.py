@@ -28,8 +28,8 @@ class Environment():
         self.vel_max = 2.0
         self.goalPos = [0.0, -5.0, 2.0]
         self.goal_threshold = 1
-        self.crash_reward = -20
-        self.goal_reward = 20
+        self.crash_reward = -5
+        self.goal_reward = 5
 
         self.num_states = 3
         self.num_actions = 3
@@ -247,7 +247,7 @@ class Environment():
         
         if altitude_bad or pitch_bad or roll_bad or x_bad or y_bad:
             if self.debug:
-                rospy.loginfo "(Terminating Episode: Unstable quad) >>> ("+str(altitude_bad)+","+str(pitch_bad)+","+str(roll_bad)+","+str(x_bad)+","+str(y_bad)+")")
+                rospy.loginfo ("(Terminating Episode: Unstable quad) >>> ("+str(altitude_bad)+","+str(pitch_bad)+","+str(roll_bad)+","+str(x_bad)+","+str(y_bad)+")")
             
             done = True
             reward = self.crash_reward  # TODO: Scale this down?
