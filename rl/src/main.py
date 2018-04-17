@@ -20,6 +20,8 @@ from Actor_Network import Actor_Network
 from Critic_Network import Critic_Network
 import keras.backend as K
 
+timestr = time.strftime("%Y%m%d-%H%M%S")
+save_path = 'saved_models_rohit_' + timestr
 
 def ou_func(x, mu, theta, sigma=0.3):
     return theta * (mu - x) + sigma * np.random.randn(1)
@@ -76,8 +78,8 @@ def train_quad(debug=True):
     # except:
     #   print("WOW WOW WOW, Cannot find the weight")
 
-    timestr = time.strftime("%Y%m%d-%H%M%S")
-    save_path = 'saved_models_rohit_' + timestr
+    # timestr = time.strftime("%Y%m%d-%H%M%S")
+    # save_path = 'saved_models_rohit_' + timestr
     save_dir = os.path.join(os.getcwd(), save_path)
     if not os.path.isdir(save_dir):
         os.makedirs(save_dir)
@@ -234,8 +236,9 @@ def test_quad(debug = True):
     K.set_session(sess)
 
     # actor, critic and buffer
-    dir_name = 'saved_models_rohit_' + timestr
-    load_dir = os.path.join(os.getcwd(), dir_name)
+    # dir_name = 'saved_models_rohit_' + timestr
+    # dir_name = 'saved_models_rohit_20180417-050909'
+    load_dir = os.path.join(os.getcwd(), save_path)
 
 
     plt.ion()
@@ -247,11 +250,13 @@ def test_quad(debug = True):
     model_num = []
     mean_reward = []
     #not the numbers, they are based on how i saved
-    for i in range(500,1050,50): #(50,1050,50)
+    for i in range(300,1050,50): #(50,1050,50)
          #change this manually according to ur saved models
         actor_model_name = '%d_actor_model.h5' %(i)
         critic_model_name = '%d_critic_model.h5' %(i)       
         filepath1 = os.path.join(load_dir, actor_model_name)
+        # pdb.set_trace()
+
         actor = load_model(filepath1)
         #filepath2 = os.path.join(load_dir, critic_model_name)
         #critic.model = load_model(filepath2) 
@@ -297,8 +302,7 @@ def test_quad(debug = True):
         plt.plot(model_num,mean_reward,'b')
         plt.pause(0.001)
 
-    timestr = time.strftime("%Y%m%d-%H%M%S")
-    save_path = 'saved_models_rohit_' + timestr
+    # save_path = 'saved_models_rohit_20180417-050909'
     save_dir = os.path.join(os.getcwd(), save_path)    
     if not os.path.isdir(save_dir):
         os.makedirs(save_dir)
