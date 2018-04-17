@@ -76,7 +76,9 @@ def train_quad(debug=True):
     # except:
     #   print("WOW WOW WOW, Cannot find the weight")
 
-    save_dir = os.path.join(os.getcwd(), 'saved_models_hari_3')
+    timestr = time.strftime("%Y%m%d-%H%M%S")
+    save_path = 'saved_models_rohit_' + timestr
+    save_dir = os.path.join(os.getcwd(), save_path)
     if not os.path.isdir(save_dir):
         os.makedirs(save_dir)
     os.chdir(save_dir)
@@ -232,7 +234,7 @@ def test_quad(debug = True):
     K.set_session(sess)
 
     # actor, critic and buffer
-    dir_name = 'saved_models_rohit' 
+    dir_name = 'saved_models_rohit_' + timestr
     load_dir = os.path.join(os.getcwd(), dir_name)
 
 
@@ -295,11 +297,21 @@ def test_quad(debug = True):
         plt.plot(model_num,mean_reward,'b')
         plt.pause(0.001)
 
-    save_dir = os.path.join(os.getcwd(), 'saved_models_rohit')
+    timestr = time.strftime("%Y%m%d-%H%M%S")
+    save_path = 'saved_models_rohit_' + timestr
+    save_dir = os.path.join(os.getcwd(), save_path)    
     if not os.path.isdir(save_dir):
         os.makedirs(save_dir)
     os.chdir(save_dir)          
     plt.savefig("Learning Curve.png")
+
+import signal, sys
+def signal_handler(signal, frame):
+    reason = 'Because'
+    rospy.signal_shutdown(reason)
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, signal_handler)
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='DDPG Network Argument Parser')
@@ -307,7 +319,7 @@ def parse_arguments():
     return parser.parse_args()    
 
 if __name__ == "__main__":
-    rospy.init_node('quad', anonymous=True)
+    rospy.init_node('quad', anonymous=True, disable_signals=True)
     args = parse_arguments()
     train_indicator = args.train  # Training = 1, Test = 0
     debug = False  # If you want debugging print statements
@@ -315,6 +327,8 @@ if __name__ == "__main__":
         train_quad(debug)
     else:
         test_quad(debug)
+
+
 
 # import environment
 # import rospy
