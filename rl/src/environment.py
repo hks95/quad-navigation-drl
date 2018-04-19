@@ -29,7 +29,10 @@ class Environment():
         self.goalPos = [0.0, -5.0, 2.0]
         self.goal_threshold = 1
         self.crash_reward = -5
-        self.goal_reward = 20
+        self.goal_reward = 5
+
+        self.vel_k = 0.02
+        self.vel_exp = 1.2
 
         self.num_states = 3
         self.num_actions = 3
@@ -43,9 +46,11 @@ class Environment():
         self.max_y =  10.0
         self.min_y = -10.0
 
-        self.debug = False # debig
+        self.debug = debug
 
         self.prev_state = []
+
+        self.battery = 1.0
 
         # self.plotState = np.zeros((self.num_states,))
 
@@ -106,8 +111,12 @@ class Environment():
             initState = [initStateData.pose.pose.position.x, initStateData.pose.pose.position.y, initStateData.pose.pose.position.z]
             self.plotState = np.asarray(initState)
             self.prev_state = initState
+
             # 5th: pauses simulation
             self.gazebo.pauseSim()
+
+            # 6th: Reset battery level
+            self.battery = 1.0
 
             return initState
 
@@ -153,6 +162,17 @@ class Environment():
         
         return poseData, imuData, velData, motorData
 
+    def getBatteryDrain(self, vel):
+
+        vel_vector = np.array([vel.vector.x, vel.vector.y, vel.vector.z])
+        batteryDrain = self.vel_k * np.power(np.linalg.norm(vel_vector), self.vel_exp)
+        self.battery -= batteryDrain
+
+        if self.debug:
+            print('Battery Level: {}'.format(self.battery))
+        
+        return batteryDrain
+
     def _distance(self, pose):
 
         currentPos = [pose.position.x, pose.position.y, pose.position.z]
@@ -178,10 +198,14 @@ class Environment():
         error = self._distance(poseData)
 
         currentPos = [poseData.position.x, poseData.position.y, poseData.position.z]
+
+        drain = self.getBatteryDrain(velData)
         
         if self.debug:
-            print('distance from goal: {}'.format(error))
+            print('distance from goal: {}, battery step drain: {}'.format(error, drain))
         # reward += -error
+
+        reward -= drain
 
         if error < self.goal_threshold:
             reward += self.goal_reward
@@ -251,6 +275,13 @@ class Environment():
             
             done = True
             reward = self.crash_reward  # TODO: Scale this down?
+
+        elif self.battery < 0.01:
+            done = True
+            reward = self.crash_reward
+
+            if self.debug:
+                rospy.loginfo("BATTERY DEAD!")
 
         else:  # TODO: Should we get a reward if we terminate?
             reward, reachedGoal = self.getReward(poseData, imuData, velData)

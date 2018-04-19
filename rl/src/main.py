@@ -105,8 +105,9 @@ def train_quad(debug=True):
                 break
             
             step += 1
-            # print('--------------------------------')
-            # print('step: {}'.format(step))
+            if debug:
+                print('--------------------------------')
+                print('step: {}'.format(step))
 
             loss = 0
             epsilon -= 1.0/explore
@@ -237,7 +238,7 @@ def test_quad(debug = True):
 
     # actor, critic and buffer
     # dir_name = 'saved_models_rohit_' + timestr
-    # dir_name = 'saved_models_rohit_20180417-050909'
+    save_path = 'saved_models_rohit_20180417-050909'
     load_dir = os.path.join(os.getcwd(), save_path)
 
 
@@ -320,13 +321,14 @@ signal.signal(signal.SIGINT, signal_handler)
 def parse_arguments():
     parser = argparse.ArgumentParser(description='DDPG Network Argument Parser')
     parser.add_argument('--train',dest='train',type=int,default=1)
+    parser.add_argument('--debug',dest='debug',type=int,default=0)
     return parser.parse_args()    
 
 if __name__ == "__main__":
     rospy.init_node('quad', anonymous=True, disable_signals=True)
     args = parse_arguments()
     train_indicator = args.train  # Training = 1, Test = 0
-    debug = False  # If you want debugging print statements
+    debug = args.debug  # Debug statements = 1, No debug = 0
     if train_indicator==1:
         train_quad(debug)
     else:
