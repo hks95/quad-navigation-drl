@@ -237,8 +237,7 @@ def test_quad(debug = True):
     K.set_session(sess)
 
     # actor, critic and buffer
-    # dir_name = 'saved_models_rohit_' + timestr
-    save_path = 'saved_models_rohit_20180417-050909'
+    # save_path = 'saved_models_rohit_20180417-050909'
     load_dir = os.path.join(os.getcwd(), save_path)
 
 
@@ -300,7 +299,9 @@ def test_quad(debug = True):
 
         print('episode: {} total rewards {}'.format(i,np.mean(cumulative_reward)))
         mean_reward.append(np.mean(cumulative_reward))
-        plt.plot(model_num,mean_reward,'b')
+        std_reward.append(np.std(cumulative_reward))
+        # plt.plot(model_num,mean_reward,'b')
+        plt.errorbar(model_num, mean_reward, xerr=std_reward)
         plt.pause(0.001)
 
     # save_path = 'saved_models_rohit_20180417-050909'
