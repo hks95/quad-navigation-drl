@@ -28,8 +28,8 @@ class Environment():
 		self.vel_max = 2.0
 		self.goalPos = [0.0, -5.0, 2.0]
 		self.goal_threshold = 0.5
-		self.crash_reward = -20
-		self.goal_reward = 20
+		self.crash_reward = -10
+		self.goal_reward = 30
 
 		self.num_states = 3
 		self.num_actions = 3
@@ -186,14 +186,10 @@ class Environment():
 		
 		else:
 			# pdb.set_trace()
-			reward = reward + min(1/(error),10) #100 is clipping value
+			reward = reward + min(5/(error),50) #100 is clipping value
 			# reward = 10
 			reachedGoal = False
-			# reward += -error
-			
-			# Add other rewards here
-			
-
+			# reward += -error			
 
 	# TODO: Probably need to make a 3D equivalent of this
 		# angletoGoal = np.arctan2(np.abs(poseData.position.y - self.goalPos[1]), np.abs(poseData.position.x - self.goalPos[2]))

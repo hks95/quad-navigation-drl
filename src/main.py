@@ -34,7 +34,7 @@ def train_quad(debug=True):
 
 	buffer_size = 5000
 	batch_size = 32
-	gamma = 0.95
+	gamma = 0.98
 	tau = 0.001
 
 	np.random.seed(1337)
@@ -76,7 +76,7 @@ def train_quad(debug=True):
 	# except:
 	#   print("WOW WOW WOW, Cannot find the weight")
 
-	save_dir = os.path.join(os.getcwd(), 'saved_models_hari_3')
+	save_dir = os.path.join(os.getcwd(), 'saved_models_hari_5')
 	if not os.path.isdir(save_dir):
 		os.makedirs(save_dir)
 	os.chdir(save_dir)
@@ -210,7 +210,7 @@ def test_quad(debug = True):
 	obs_dim = env.num_states
 	act_dim = env.num_actions
 
-	gamma = 0.95
+	gamma = 0.98
 	tau = 0.001
 
 	vision = False
@@ -232,7 +232,7 @@ def test_quad(debug = True):
 	K.set_session(sess)
 
 	# actor, critic and buffer
-	dir_name = 'saved_models_hari_3' 
+	dir_name = 'saved_models_hari_5' 
 	load_dir = os.path.join(os.getcwd(), dir_name)
 
 
@@ -247,6 +247,7 @@ def test_quad(debug = True):
 	#not the numbers, they are based on how i saved
 	for i in range(50,1050,50): #(50,1050,50)
 		 #change this manually according to ur saved models
+		# i=1000
 		actor_model_name = '%d_actor_model.h5' %(i)
 		critic_model_name = '%d_critic_model.h5' %(i)       
 		filepath1 = os.path.join(load_dir, actor_model_name)
@@ -295,7 +296,7 @@ def test_quad(debug = True):
 		plt.plot(model_num,mean_reward,'b')
 		plt.pause(0.001)
 
-	save_dir = os.path.join(os.getcwd(), 'saved_models_hari_3')
+	save_dir = os.path.join(os.getcwd(), 'saved_models_hari_5')
 	if not os.path.isdir(save_dir):
 		os.makedirs(save_dir)
 	os.chdir(save_dir)			
@@ -313,5 +314,6 @@ if __name__ == "__main__":
 	debug = False  # If you want debugging print statements
 	if train_indicator==1:
 		train_quad(debug)
-	else:
-		test_quad(debug)
+	# else:
+	print("------------- starting testing----------------")
+	test_quad(debug)
