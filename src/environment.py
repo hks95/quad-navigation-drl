@@ -49,7 +49,7 @@ class Environment():
 
 		self.prev_state = []
 
-		self.battery = 100
+		self.battery = 200
 		self.battery_exp = 1.1
 
 		# self.plotState = np.zeros((self.num_states,))
@@ -179,7 +179,6 @@ class Environment():
 		# Output: reward according to the defined reward function
 
 	# TODO: Change the error to weight the z_error higher
-
 		reward = 0
 
 		error = self._distance(poseData)
@@ -191,7 +190,6 @@ class Environment():
 		if error < self.goal_threshold:
 			reward += self.goal_reward
 			reachedGoal = True
-		
 		else:
 			############################
 			#  custom reward function  #
@@ -200,7 +198,6 @@ class Environment():
 			curr_pose = np.array([poseData.position.x, poseData.position.y, poseData.position.z])
 			prev_pose = np.asarray(self.prev_state[0:3])
 			goal_pose = np.array(self.goalPos)
-			# reward += 1/(LA.norm(curr_pose-goal_pose)) - 1/(LA.norm(prev_pose-goal_pose))
 
 			prev_dist = LA.norm(prev_pose-goal_pose)
 			curr_dist = LA.norm(curr_pose-goal_pose)
@@ -211,10 +208,11 @@ class Environment():
 
 			reachedGoal = False
 			# reward += -error
+		return reward, reachedGoal
 			
 	def battery_drain(self, vel):
-		velocity = np.array([1+vel.vector.x, 1+vel.vector.y, 1+vel.vector.z])
-		velocity = La.norm(velocity)
+		velocity = np.array([1+abs(vel.vector.x), 1+abs(vel.vector.y), 1+abs(vel.vector.z)])
+		velocity = LA.norm(velocity)
 		return -(velocity)**self.battery_exp
 
 
@@ -262,6 +260,7 @@ class Environment():
 
 		self.battery += self.battery_drain(velData)
 		if self.battery <= 0:
+			print ('fauck you man, no energy, hahahahahahahaha')
 			done = True
 
 		roll, pitch, yaw = self.quaternion_to_euler_angle(imuData.orientation.x, imuData.orientation.y, imuData.orientation.z, imuData.orientation.w)
