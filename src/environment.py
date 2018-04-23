@@ -26,10 +26,10 @@ class Environment():
 		
 		self.vel_min = -2.0
 		self.vel_max = 2.0
-		self.goalPos = [5.0, 5.0, 3.0]
+		self.goalPos = [0.0, -10.0, 2.0]
 		self.goal_threshold = 0.5
-		self.crash_reward = -5
-		self.goal_reward = 20
+		self.crash_reward = -20
+		self.goal_reward = 100
 
 		self.num_states = 3
 		self.num_actions = 3
@@ -190,7 +190,7 @@ class Environment():
 		else:
 			# pdb.set_trace()
 			# reward = reward + min(5/(error),50) #100 is clipping value
-			reward = reward + 5*(np.linalg.norm(np.subtract(self.prev_state, self.goalPos)) - np.linalg.norm(np.subtract(currentPos, self.goalPos)))
+			reward = reward + (np.linalg.norm(np.subtract(self.prev_state, self.goalPos)) - np.linalg.norm(np.subtract(currentPos, self.goalPos)))
 			# reward = 10
 			reachedGoal = False
 			# reward += -error			
@@ -243,10 +243,6 @@ class Environment():
 		# yaw = euler[2]
 
 		self.battery += self.battery_drain(velData)
-		if self.battery <= 0:
-			print ('battery dead')
-			reward = self.crash_reward
-			done = True
 
 		roll, pitch, yaw = self.quaternion_to_euler_angle(imuData.orientation.x, imuData.orientation.y, imuData.orientation.z, imuData.orientation.w)
 
@@ -262,7 +258,10 @@ class Environment():
 			print('Unstable quad')
 			done = True
 			reward = self.crash_reward  # TODO: Scale this down?
-
+		elif self.battery <= 0:
+			print ('battery dead')
+			reward = self.crash_reward
+			done = True
 		else:  # TODO: Should we get a reward if we terminate?
 			reward, reachedGoal = self.getReward(poseData, imuData, velData)
 			if reachedGoal:
