@@ -26,10 +26,10 @@ class Environment():
 		
 		self.vel_min = -2.0
 		self.vel_max = 2.0
-		self.goalPos = [0.0, -5.0, 2.0]
+		self.goalPos = [5.0, 5.0, 3.0]
 		self.goal_threshold = 0.5
-		self.crash_reward = -10
-		self.goal_reward = 30
+		self.crash_reward = -5
+		self.goal_reward = 20
 
 		self.num_states = 3
 		self.num_actions = 3
@@ -47,6 +47,8 @@ class Environment():
 
 		self.prev_state = []
 
+		self.battery = 200
+		self.battery_exp = 1.1
 		# self.plotState = np.zeros((self.num_states,))
 
 		# imu_sub = message_filters.Subscriber("/raw_imu", Imu)
@@ -92,7 +94,7 @@ class Environment():
 
 			# 1st: resets the simulation to initial values
 			self.gazebo.resetSim()
-
+			self.battery = 200
 			# 2nd: Unpauses simulation
 			self.gazebo.unpauseSim()
 
@@ -206,6 +208,11 @@ class Environment():
 
 		return reward, reachedGoal
 
+	def battery_drain(self, vel):
+		velocity = np.array([1+abs(vel.vector.x), 1+abs(vel.vector.y), 1+abs(vel.vector.z)])
+		velocity = np.linalg.norm(velocity)
+		return -(velocity)**self.battery_exp
+
 	def quaternion_to_euler_angle(self, x, y, z, w):
 		ysqr = y * y
 		
@@ -233,6 +240,11 @@ class Environment():
 		# pitch = euler[1]
 		# yaw = euler[2]
 
+		self.battery += self.battery_drain(velData)
+		if self.battery <= 0:
+			print ('battery dead')
+			done = True
+
 		roll, pitch, yaw = self.quaternion_to_euler_angle(imuData.orientation.x, imuData.orientation.y, imuData.orientation.z, imuData.orientation.w)
 
 		pitch_bad = not(-self.max_incl < pitch < self.max_incl)
@@ -254,7 +266,7 @@ class Environment():
 				done = True
 
 		if self.debug:
-			print('Step Reward: {}'.format(reward))
+			print('Step Reward: {} battery level {}'.format(reward,self.battery))
 
 		return reward,done
 

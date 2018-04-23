@@ -34,7 +34,7 @@ def train_quad(debug=True):
 
 	buffer_size = 5000
 	batch_size = 32
-	gamma = 0.98
+	gamma = 0.95
 	tau = 0.001
 
 	np.random.seed(1337)
@@ -42,7 +42,7 @@ def train_quad(debug=True):
 	vision = False
 
 	explore = 100000
-	eps_count = 1000
+	eps_count = 3000
 	max_steps = 100000
 	reward = 0
 	done = False
@@ -76,7 +76,7 @@ def train_quad(debug=True):
 	# except:
 	#   print("WOW WOW WOW, Cannot find the weight")
 
-	save_dir = os.path.join(os.getcwd(), 'saved_models_hari_5')
+	save_dir = os.path.join(os.getcwd(), 'saved_models_hari_6')
 	if not os.path.isdir(save_dir):
 		os.makedirs(save_dir)
 	os.chdir(save_dir)
@@ -172,8 +172,7 @@ def train_quad(debug=True):
 				# critic.model.save_weights("criticmodel.h5", overwrite=True)
 				# with open("criticmodel.json", "w") as outfile:
 				#     json.dump(critic.model.to_json(), outfile)
-
-		print('episode: {} total rewards {}'.format(epi+1,total_reward))
+		print('episode: {} step: {} total reward: {} battery level: {}'.format(epi+1,step,total_reward,env.battery))
 		############# Plotting states ############
 		# if plot_state:
 		#     states = env.plotState
@@ -210,7 +209,7 @@ def test_quad(debug = True):
 	obs_dim = env.num_states
 	act_dim = env.num_actions
 
-	gamma = 0.98
+	gamma = 0.95
 	tau = 0.001
 
 	vision = False
@@ -232,7 +231,7 @@ def test_quad(debug = True):
 	K.set_session(sess)
 
 	# actor, critic and buffer
-	dir_name = 'saved_models_hari_5' 
+	dir_name = 'saved_models_hari_6' 
 	load_dir = os.path.join(os.getcwd(), dir_name)
 
 
@@ -245,7 +244,7 @@ def test_quad(debug = True):
 	model_num = []
 	mean_reward = []
 	#not the numbers, they are based on how i saved
-	for i in range(50,1050,50): #(50,1050,50)
+	for i in range(500,1050,50): #(50,1050,50)
 		 #change this manually according to ur saved models
 		# i=1000
 		actor_model_name = '%d_actor_model.h5' %(i)
@@ -291,16 +290,25 @@ def test_quad(debug = True):
 			cumulative_reward.append(total_reward)
 			print(epi)
 
-		print('episode: {} total rewards {}'.format(i,np.mean(cumulative_reward)))
+		print('episode: {} step: {} total reward: {} battery level: {}'.format(i,step,np.mean(cumulative_reward),env.battery))
 		mean_reward.append(np.mean(cumulative_reward))
 		plt.plot(model_num,mean_reward,'b')
 		plt.pause(0.001)
 
-	save_dir = os.path.join(os.getcwd(), 'saved_models_hari_5')
+	save_dir = os.path.join(os.getcwd(), 'saved_models_hari_6')
 	if not os.path.isdir(save_dir):
 		os.makedirs(save_dir)
 	os.chdir(save_dir)			
 	plt.savefig("Learning Curve.png")
+
+
+import signal, sys
+def signal_handler(signal, frame):
+    reason = 'Because'
+    rospy.signal_shutdown(reason)
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, signal_handler)
 
 def parse_arguments():
 	parser = argparse.ArgumentParser(description='DDPG Network Argument Parser')
@@ -313,7 +321,10 @@ if __name__ == "__main__":
 	train_indicator = args.train  # Training = 1, Test = 0
 	debug = False  # If you want debugging print statements
 	if train_indicator==1:
+		print("------------- starting training----------------")
 		train_quad(debug)
 	# else:
-	print("------------- starting testing----------------")
-	test_quad(debug)
+		print("------------- starting testing----------------")
+		test_quad(debug)
+	else:
+		test_quad(debug)
