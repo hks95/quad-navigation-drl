@@ -188,7 +188,8 @@ class Environment():
 		
 		else:
 			# pdb.set_trace()
-			reward = reward + min(5/(error),50) #100 is clipping value
+			# reward = reward + min(5/(error),50) #100 is clipping value
+			reward = reward + 5*(np.linalg.norm(np.subtract(self.prev_state, self.goalPos)) - np.linalg.norm(np.subtract(currentPos, self.goalPos)))
 			# reward = 10
 			reachedGoal = False
 			# reward += -error			
