@@ -50,6 +50,7 @@ class Environment():
 		self.prev_state = []
 
 		self.battery = 200
+		self.battery_full = 200
 		self.battery_exp = 1.1
 
 		# self.plotState = np.zeros((self.num_states,))
@@ -99,7 +100,7 @@ class Environment():
 
 		# 1st: resets the simulation to initial values
 		self.gazebo.resetSim()
-		self.battery = 100
+		self.battery = self.battery_full
 
 		# 2nd: Unpauses simulation
 		self.gazebo.unpauseSim()
