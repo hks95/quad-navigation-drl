@@ -15,8 +15,6 @@ import random
 import math
 import pdb
 
-from numpy import linalg as LA
-
 class Environment():
 
 	def __init__(self, debug):
@@ -28,10 +26,10 @@ class Environment():
 		
 		self.vel_min = -2.0
 		self.vel_max = 2.0
-		self.goalPos = [0.0, -5.0, 2.0]
+		self.goalPos = [5.0, 5.0, 3.0]
 		self.goal_threshold = 0.5
 		self.crash_reward = -5
-		self.goal_reward = 100
+		self.goal_reward = 20
 
 		self.num_states = 3
 		self.num_actions = 3
@@ -50,9 +48,7 @@ class Environment():
 		self.prev_state = []
 
 		self.battery = 200
-		self.battery_full = 200
 		self.battery_exp = 1.1
-
 		# self.plotState = np.zeros((self.num_states,))
 
 		# imu_sub = message_filters.Subscriber("/raw_imu", Imu)
@@ -76,8 +72,6 @@ class Environment():
 		vel.linear.y = action[1]
 		vel.linear.z = action[2]
 
-
-
 		if self.debug:
 			print('vel_x: {}, vel_y: {}, vel_z: {}'.format(vel.linear.x, vel.linear.y, vel.linear.z))
 		
@@ -98,27 +92,26 @@ class Environment():
 
 	def _reset(self):
 
-		# 1st: resets the simulation to initial values
-		self.gazebo.resetSim()
-		self.battery = self.battery_full
+			# 1st: resets the simulation to initial values
+			self.gazebo.resetSim()
+			self.battery = 200
+			# 2nd: Unpauses simulation
+			self.gazebo.unpauseSim()
 
-		# 2nd: Unpauses simulation
-		self.gazebo.unpauseSim()
+			# 3rd: Don't want to start the agent from the ground
+			self.takeoff()
 
-		# 3rd: Don't want to start the agent from the ground
-		self.takeoff()
+			# 4th: Get init state
+			# TODO: Should initial state have some randomness?
+			initStateData, _, _, _ = self.takeObservation()
 
-		# 4th: Get init state
-		# TODO: Should initial state have some randomness?
-		initStateData, _, _, _ = self.takeObservation()
+			initState = [initStateData.pose.pose.position.x, initStateData.pose.pose.position.y, initStateData.pose.pose.position.z]
+			self.plotState = np.asarray(initState)
+			self.prev_state = initState
+			# 5th: pauses simulation
+			self.gazebo.pauseSim()
 
-		initState = [initStateData.pose.pose.position.x, initStateData.pose.pose.position.y, initStateData.pose.pose.position.z]
-		self.plotState = np.asarray(initState)
-		self.prev_state = initState
-		# 5th: pauses simulation
-		self.gazebo.pauseSim()
-
-		return initState
+			return initState
 
 	def _sample(self):
 
@@ -180,6 +173,7 @@ class Environment():
 		# Output: reward according to the defined reward function
 
 	# TODO: Change the error to weight the z_error higher
+
 		reward = 0
 
 		error = self._distance(poseData)
@@ -191,31 +185,13 @@ class Environment():
 		if error < self.goal_threshold:
 			reward += self.goal_reward
 			reachedGoal = True
+		
 		else:
-			############################
-			#  custom reward function  #
-			############################
-
-			curr_pose = np.array([poseData.position.x, poseData.position.y, poseData.position.z])
-			prev_pose = np.asarray(self.prev_state[0:3])
-			goal_pose = np.array(self.goalPos)
-
-			prev_dist = LA.norm(prev_pose-goal_pose)
-			curr_dist = LA.norm(curr_pose-goal_pose)
-
-			# reward += prev_dist- curr_dist
-			currentPos = [poseData.position.x, poseData.position.y, poseData.position.z]
-			reward += LA.norm(np.subtract(self.prev_state, self.goalPos)) - LA.norm(np.subtract(currentPos, self.goalPos))
-
+			# pdb.set_trace()
+			reward = reward + min(5/(error),50) #100 is clipping value
+			# reward = 10
 			reachedGoal = False
-			# reward += -error
-		return reward, reachedGoal
-			
-	def battery_drain(self, vel):
-		velocity = np.array([1+abs(vel.vector.x), 1+abs(vel.vector.y), 1+abs(vel.vector.z)])
-		velocity = LA.norm(velocity)
-		return -(velocity)**self.battery_exp
-
+			# reward += -error			
 
 	# TODO: Probably need to make a 3D equivalent of this
 		# angletoGoal = np.arctan2(np.abs(poseData.position.y - self.goalPos[1]), np.abs(poseData.position.x - self.goalPos[2]))
@@ -231,6 +207,11 @@ class Environment():
 		#     reward -= 5
 
 		return reward, reachedGoal
+
+	def battery_drain(self, vel):
+		velocity = np.array([1+abs(vel.vector.x), 1+abs(vel.vector.y), 1+abs(vel.vector.z)])
+		velocity = np.linalg.norm(velocity)
+		return -(velocity)**self.battery_exp
 
 	def quaternion_to_euler_angle(self, x, y, z, w):
 		ysqr = y * y
@@ -261,7 +242,7 @@ class Environment():
 
 		self.battery += self.battery_drain(velData)
 		if self.battery <= 0:
-			print ('fauck you man, no energy, hahahahahahahaha')
+			print ('battery dead')
 			done = True
 
 		roll, pitch, yaw = self.quaternion_to_euler_angle(imuData.orientation.x, imuData.orientation.y, imuData.orientation.z, imuData.orientation.w)
@@ -285,9 +266,9 @@ class Environment():
 				done = True
 
 		if self.debug:
-			print('Step Reward: {}'.format(reward))
+			print('Step Reward: {} battery level {}'.format(reward,self.battery))
 
-		return reward, done
+		return reward,done
 
 	def takeoff(self):
 
@@ -296,7 +277,7 @@ class Environment():
 		msg = Twist()
 
 		# while not rospy.is_shutdown():
-		while count < 4:
+		while count < 2:
 			msg.linear.z = 0.5
 			# rospy.loginfo('Lift off')
 
