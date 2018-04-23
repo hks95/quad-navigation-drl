@@ -177,6 +177,7 @@ class Environment():
 		reward = 0
 
 		error = self._distance(poseData)
+		currentPos = [poseData.position.x, poseData.position.y, poseData.position.z]
 		
 		if self.debug:
 			print('distance from goal: {}'.format(error))
@@ -244,6 +245,7 @@ class Environment():
 		self.battery += self.battery_drain(velData)
 		if self.battery <= 0:
 			print ('battery dead')
+			reward = self.crash_reward
 			done = True
 
 		roll, pitch, yaw = self.quaternion_to_euler_angle(imuData.orientation.x, imuData.orientation.y, imuData.orientation.z, imuData.orientation.w)
@@ -256,7 +258,8 @@ class Environment():
 		# print('motorData.on: {}'.format(motorData.on))  # MotorData message doesn't really work
 		# print('------------------------------------')
 		if altitude_bad or pitch_bad or roll_bad or x_bad or y_bad:
-			rospy.loginfo ("(Terminating Episode: Unstable quad) >>> ("+str(altitude_bad)+","+str(pitch_bad)+","+str(roll_bad)+","+str(x_bad)+","+str(y_bad)+")")
+			# rospy.loginfo ("(Terminating Episode: Unstable quad) >>> ("+str(altitude_bad)+","+str(pitch_bad)+","+str(roll_bad)+","+str(x_bad)+","+str(y_bad)+")")
+			print('Unstable quad')
 			done = True
 			reward = self.crash_reward  # TODO: Scale this down?
 

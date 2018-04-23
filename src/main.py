@@ -215,7 +215,7 @@ def test_quad(debug = True):
 
 	vision = False
 
-	eps_count = 20
+	eps_count = 3
 	max_steps = 100000
 	reward = 0
 	done = False
@@ -245,7 +245,7 @@ def test_quad(debug = True):
 	model_num = []
 	mean_reward = []
 	#not the numbers, they are based on how i saved
-	for i in range(500,1050,50): #(50,1050,50)
+	for i in range(300,1500,50): #(50,1050,50)
 		 #change this manually according to ur saved models
 		# i=1000
 		actor_model_name = '%d_actor_model.h5' %(i)
