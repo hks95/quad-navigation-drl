@@ -43,6 +43,7 @@ def train_quad(debug=True):
 
 	explore = 100000
 	eps_count = 3000
+
 	max_steps = 100000
 	reward = 0
 	done = False
