@@ -13,12 +13,13 @@ import tensorflow as tf
 
 
 class Critic_Network(object):
-    def __init__(self, env, sess, batch_size=32, tau=0.125, learning_rate=0.001):
+    def __init__(self, env, sess, num_states, batch_size=32, tau=0.125, learning_rate=0.001):
         self.env = env
         self.sess = sess
         self.bs = batch_size
 
-        self.obs_dim = self.env.num_states
+        # self.obs_dim = self.env.num_states
+        self.obs_dim = num_states
         self.act_dim = self.env.num_actions
 
         # hyperparameters
