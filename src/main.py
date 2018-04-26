@@ -34,7 +34,7 @@ def train_quad(debug=True):
 
 	buffer_size = 5000
 	batch_size = 32
-	gamma = 0.95
+	gamma = 0.98
 	tau = 0.001
 
 	np.random.seed(1337)
@@ -42,7 +42,7 @@ def train_quad(debug=True):
 	vision = False
 
 	explore = 100000
-	eps_count = 3000
+	eps_count = 2000
 
 	max_steps = 100000
 	reward = 0
@@ -210,7 +210,7 @@ def test_quad(debug = True):
 	obs_dim = env.num_states
 	act_dim = env.num_actions
 
-	gamma = 0.95
+	gamma = 0.98
 	tau = 0.001
 
 	vision = False
@@ -245,9 +245,9 @@ def test_quad(debug = True):
 	model_num = []
 	mean_reward = []
 	#not the numbers, they are based on how i saved
-	for i in range(300,1500,50): #(50,1050,50)
+	for i in range(1250,2050,50): #(50,1050,50)
 		 #change this manually according to ur saved models
-		# i=1000
+	
 		actor_model_name = '%d_actor_model.h5' %(i)
 		critic_model_name = '%d_critic_model.h5' %(i)       
 		filepath1 = os.path.join(load_dir, actor_model_name)
@@ -287,11 +287,11 @@ def test_quad(debug = True):
 				s_t1 = np.asarray(s_t1)
 				total_reward += r_t
 				s_t = s_t1
-
+			print('episode: {} step: {} total reward: {} battery level: {}'.format(epi+1,step,total_reward,env.battery))
 			cumulative_reward.append(total_reward)
-			print(epi)
+			# print(epi)
 
-		print('episode: {} step: {} total reward: {} battery level: {}'.format(i,step,np.mean(cumulative_reward),env.battery))
+		print('model: {} mean reward: {}'.format(i,np.mean(cumulative_reward)))
 		mean_reward.append(np.mean(cumulative_reward))
 		plt.plot(model_num,mean_reward,'b')
 		plt.pause(0.001)
@@ -314,13 +314,14 @@ signal.signal(signal.SIGINT, signal_handler)
 def parse_arguments():
 	parser = argparse.ArgumentParser(description='DDPG Network Argument Parser')
 	parser.add_argument('--train',dest='train',type=int,default=1)
+	parser.add_argument('--debug',dest='debug',type=bool,default=False)
 	return parser.parse_args()    
 
 if __name__ == "__main__":
 	rospy.init_node('quad', anonymous=True)
 	args = parse_arguments()
 	train_indicator = args.train  # Training = 1, Test = 0
-	debug = False  # If you want debugging print statements
+	debug = args.debug  # If you want debugging print statements
 	if train_indicator==1:
 		print("------------- starting training----------------")
 		train_quad(debug)

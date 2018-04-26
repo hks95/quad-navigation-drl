@@ -26,10 +26,10 @@ class Environment():
 		
 		self.vel_min = -2.0
 		self.vel_max = 2.0
-		self.goalPos = [0.0, -10.0, 2.0]
+		self.goalPos = [5.0, -10.0, 2.0]
 		self.goal_threshold = 0.5
-		self.crash_reward = -20
-		self.goal_reward = 100
+		self.crash_reward = -5
+		self.goal_reward = 10 #reduce to 20 #allow more aggressive motions?
 
 		self.num_states = 3
 		self.num_actions = 3
@@ -37,11 +37,11 @@ class Environment():
 		self.max_altitude = 5.0
 		self.min_altitude = 0.5
 
-		self.max_x =  10.0
-		self.min_x = -10.0
+		self.max_x =  15.0
+		self.min_x = -15.0
 
-		self.max_y =  10.0
-		self.min_y = -10.0
+		self.max_y =  15.0
+		self.min_y = -15.0
 
 		self.debug = debug
 
@@ -191,6 +191,9 @@ class Environment():
 			# pdb.set_trace()
 			# reward = reward + min(5/(error),50) #100 is clipping value
 			reward = reward + (np.linalg.norm(np.subtract(self.prev_state, self.goalPos)) - np.linalg.norm(np.subtract(currentPos, self.goalPos)))
+			# print ("dist reward  {} ".format((np.linalg.norm(np.subtract(self.prev_state, self.goalPos)) - np.linalg.norm(np.subtract(currentPos, self.goalPos)))))
+			# print("self.battery_drain(velData) {} ".format(self.battery_drain(velData)))
+			reward = reward + self.battery_drain(velData)/100 #also try scaling just by 10
 			# reward = 10
 			reachedGoal = False
 			# reward += -error			

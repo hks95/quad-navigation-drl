@@ -24,7 +24,7 @@ class Actor_Network(object):
         self.bs = batch_size 
         self.eps = 1.0
         self.eps_decay = 0.995
-        self.gamma = 0.95
+        self.gamma = 0.98
         self.tau = tau
         self.buffer_size = 5000
         self.hidden_dim = 32
