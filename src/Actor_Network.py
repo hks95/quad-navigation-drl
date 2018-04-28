@@ -12,11 +12,13 @@ from Replay_Buffer import Replay_Buffer
 
 
 class Actor_Network(object):
-    def __init__(self, env, sess, batch_size=32, tau=0.125, learning_rate=0.0001):
+    def __init__(self, env, sess, num_states, batch_size=32, tau=0.125, learning_rate=0.0001):
         self.env = env
         self.sess = sess
 
-        self.obs_dim = self.env.num_states
+        # self.obs_dim = self.env.num_states
+
+        self.obs_dim = num_states
         self.act_dim = self.env.num_actions
 
         # hyperparameters
@@ -27,7 +29,7 @@ class Actor_Network(object):
         self.gamma = 0.98
         self.tau = tau
         self.buffer_size = 5000
-        self.hidden_dim = 32
+        self.hidden_dim = 128
 
         # replay buuffer
         self.replay_buffer = Replay_Buffer(self.buffer_size)
@@ -52,8 +54,9 @@ class Actor_Network(object):
         h1 = Dense(self.hidden_dim, activation = 'relu')(obs_in)
         h2 = Dense(self.hidden_dim, activation = 'relu')(h1)
         h3 = Dense(self.hidden_dim, activation = 'relu')(h2)
+        h4 = Dense(self.hidden_dim, activation = 'relu')(h3)
 
-        out = Dense(self.act_dim, activation='tanh')(h3)
+        out = Dense(self.act_dim, activation='tanh')(h4)
 
         model = Model(input = obs_in, output = out)
 

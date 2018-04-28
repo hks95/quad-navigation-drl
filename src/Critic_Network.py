@@ -13,12 +13,13 @@ import tensorflow as tf
 
 
 class Critic_Network(object):
-    def __init__(self, env, sess, batch_size=32, tau=0.125, learning_rate=0.001):
+    def __init__(self, env, sess, num_states, batch_size=32, tau=0.125, learning_rate=0.001):
         self.env = env
         self.sess = sess
         self.bs = batch_size
 
-        self.obs_dim = self.env.num_states
+        # self.obs_dim = self.env.num_states
+        self.obs_dim = num_states
         self.act_dim = self.env.num_actions
 
         # hyperparameters
@@ -26,7 +27,7 @@ class Critic_Network(object):
         self.bs = batch_size 
         self.tau = tau
         self.buffer_size = 5000
-        self.hidden_dim = 32
+        self.hidden_dim = 128
 
         K.set_session(sess)
 
@@ -41,14 +42,16 @@ class Critic_Network(object):
         # parallel 1
         state_input = Input(shape = [self.obs_dim])
         w1 = Dense(self.hidden_dim, activation = 'relu')(state_input)
-        h1 = Dense(self.hidden_dim, activation = 'linear')(w1)
+        w2 = Dense(self.hidden_dim, activation = 'relu')(w1)
+        h1 = Dense(self.hidden_dim, activation = 'linear')(w2)
 
         # parallel 2
         action_input = Input(shape = [self.act_dim], name = 'action2')
         a1 = Dense(self.hidden_dim, activation = 'linear')(action_input)
+        a2 = Dense(self.hidden_dim, activation = 'linear')(a1)
 
         # merge
-        h2 = merge([h1, a1], mode = 'sum')
+        h2 = merge([h1, a2], mode = 'sum')
         h3 = Dense(self.hidden_dim, activation = 'relu')(h2)
         value_out = Dense(self.act_dim, activation = 'linear')(h3)
 

@@ -83,8 +83,14 @@ class Environment():
 
 		pose_ = poseData.pose.pose
 		reward, isTerminal = self.processData(pose_, imuData, velData, motorData)
-		nextState = [pose_.position.x, pose_.position.y, pose_.position.z]
-		self.plotState = np.vstack((self.plotState, np.asarray(nextState)))
+
+		###########
+		#  ROHIT  #
+		###########
+		nextState = [pose_.position.x, pose_.position.y, pose_.position.z, 
+		             self.goalPos[0], self.goalPos[1], self.goalPos[2], self.battery]
+
+		self.plotState = np.vstack((self.plotState, np.asarray(nextState)[0:3]))
 
 		self.prev_state = nextState
 
@@ -92,26 +98,36 @@ class Environment():
 
 	def _reset(self):
 
-			# 1st: resets the simulation to initial values
-			self.gazebo.resetSim()
-			self.battery = 200
-			# 2nd: Unpauses simulation
-			self.gazebo.unpauseSim()
+		# 1st: resets the simulation to initial values
+		self.gazebo.resetSim()
+		self.battery = 200
+		# 2nd: Unpauses simulation
+		self.gazebo.unpauseSim()
 
-			# 3rd: Don't want to start the agent from the ground
-			self.takeoff()
+		# 3rd: Don't want to start the agent from the ground
+		self.takeoff()
 
-			# 4th: Get init state
-			# TODO: Should initial state have some randomness?
-			initStateData, _, _, _ = self.takeObservation()
+		# 4th: Get init state
+		# TODO: Should initial state have some randomness?
+		initStateData, _, _, _ = self.takeObservation()
 
-			initState = [initStateData.pose.pose.position.x, initStateData.pose.pose.position.y, initStateData.pose.pose.position.z]
-			self.plotState = np.asarray(initState)
-			self.prev_state = initState
-			# 5th: pauses simulation
-			self.gazebo.pauseSim()
+		###########
+		#  ROHIT  #
+		###########
+		initState = [initStateData.pose.pose.position.x, 
+		             initStateData.pose.pose.position.y, 
+		             initStateData.pose.pose.position.z,
+		             self.goalPos[0],
+		             self.goalPos[1],
+		             self.goalPos[2],
+		             self.battery]
 
-			return initState
+		self.plotState = np.asarray(initState)[0:3]
+		self.prev_state = initState
+		# 5th: pauses simulation
+		self.gazebo.pauseSim()
+
+		return initState
 
 	def _sample(self):
 
@@ -190,7 +206,7 @@ class Environment():
 		else:
 			# pdb.set_trace()
 			# reward = reward + min(5/(error),50) #100 is clipping value
-			reward = reward + (np.linalg.norm(np.subtract(self.prev_state, self.goalPos)) - np.linalg.norm(np.subtract(currentPos, self.goalPos)))
+			reward = reward + (np.linalg.norm(np.subtract(self.prev_state[0:3], self.goalPos)) - np.linalg.norm(np.subtract(currentPos, self.goalPos)))
 			# print ("dist reward  {} ".format((np.linalg.norm(np.subtract(self.prev_state, self.goalPos)) - np.linalg.norm(np.subtract(currentPos, self.goalPos)))))
 			# print("self.battery_drain(velData) {} ".format(self.battery_drain(velData)))
 			reward = reward + self.battery_drain(velData)/100 #also try scaling just by 10
