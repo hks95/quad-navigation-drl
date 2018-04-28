@@ -245,7 +245,7 @@ def test_quad(debug = True):
 	model_num = []
 	mean_reward = []
 	#not the numbers, they are based on how i saved
-	for i in range(1250,2050,50): #(50,1050,50)
+	for i in range(800,1600,50): #(50,1050,50)
 		 #change this manually according to ur saved models
 	
 		actor_model_name = '%d_actor_model.h5' %(i)
@@ -292,6 +292,7 @@ def test_quad(debug = True):
 			# print(epi)
 
 		print('model: {} mean reward: {}'.format(i,np.mean(cumulative_reward)))
+		print('----------------------------------------')
 		mean_reward.append(np.mean(cumulative_reward))
 		plt.plot(model_num,mean_reward,'b')
 		plt.pause(0.001)
