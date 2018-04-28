@@ -29,7 +29,7 @@ class Environment():
 		self.goalPos = [5.0, -10.0, 2.0]
 		self.goal_threshold = 0.5
 		self.crash_reward = -5
-		self.goal_reward = 10 #reduce to 20 #allow more aggressive motions?
+		self.goal_reward = 50 #reduce to 20 #allow more aggressive motions?
 
 		self.num_states = 3
 		self.num_actions = 3
