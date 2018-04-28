@@ -29,7 +29,7 @@ class Actor_Network(object):
         self.gamma = 0.98
         self.tau = tau
         self.buffer_size = 5000
-        self.hidden_dim = 32
+        self.hidden_dim = 128
 
         # replay buuffer
         self.replay_buffer = Replay_Buffer(self.buffer_size)
@@ -54,8 +54,9 @@ class Actor_Network(object):
         h1 = Dense(self.hidden_dim, activation = 'relu')(obs_in)
         h2 = Dense(self.hidden_dim, activation = 'relu')(h1)
         h3 = Dense(self.hidden_dim, activation = 'relu')(h2)
+        h4 = Dense(self.hidden_dim, activation = 'relu')(h3)
 
-        out = Dense(self.act_dim, activation='tanh')(h3)
+        out = Dense(self.act_dim, activation='tanh')(h4)
 
         model = Model(input = obs_in, output = out)
 

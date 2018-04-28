@@ -42,7 +42,7 @@ def train_quad(debug=True):
     vision = False
 
     explore = 100000
-    eps_count = 2000
+    eps_count = 20000
 
     max_steps = 100000
     reward = 0
@@ -68,6 +68,7 @@ def train_quad(debug=True):
     ###########
     #  ROHIT  #
     ###########
+
     n_states = env.num_states + len(env.goalPos) + 1  # 1 is for battery
     goal_pos = env.goalPos
     battery = env.battery

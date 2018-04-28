@@ -27,7 +27,7 @@ class Critic_Network(object):
         self.bs = batch_size 
         self.tau = tau
         self.buffer_size = 5000
-        self.hidden_dim = 32
+        self.hidden_dim = 128
 
         K.set_session(sess)
 
@@ -42,14 +42,16 @@ class Critic_Network(object):
         # parallel 1
         state_input = Input(shape = [self.obs_dim])
         w1 = Dense(self.hidden_dim, activation = 'relu')(state_input)
-        h1 = Dense(self.hidden_dim, activation = 'linear')(w1)
+        w2 = Dense(self.hidden_dim, activation = 'relu')(w1)
+        h1 = Dense(self.hidden_dim, activation = 'linear')(w2)
 
         # parallel 2
         action_input = Input(shape = [self.act_dim], name = 'action2')
         a1 = Dense(self.hidden_dim, activation = 'linear')(action_input)
+        a2 = Dense(self.hidden_dim, activation = 'linear')(a1)
 
         # merge
-        h2 = merge([h1, a1], mode = 'sum')
+        h2 = merge([h1, a2], mode = 'sum')
         h3 = Dense(self.hidden_dim, activation = 'relu')(h2)
         value_out = Dense(self.act_dim, activation = 'linear')(h3)
 
