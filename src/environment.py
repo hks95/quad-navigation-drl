@@ -34,7 +34,7 @@ class Environment():
 		self.num_states = 3
 		self.num_actions = 3
 
-		self.max_altitude = 5.0
+		self.max_altitude = 10.0
 		self.min_altitude = 0.5
 
 		self.max_x =  15.0
@@ -62,6 +62,31 @@ class Environment():
 
 		# ats.registerCallback(self.sensor_callback)
 
+	def getRandomGoal(self):
+
+		# Completely random goal might be too tough
+		# random_theta = random.uniform(0, np.pi)
+		# radius = 5
+		# z_min = 1.5
+		# z_max = 3.5
+
+		# goal_x = radius * np.cos(random_theta)
+		# goal_y = radius * np.sin(random_theta)
+		# goal_z = random.uniform(z_min, z_max)
+
+		# return [goal_x, goal_y, goal_z]
+
+		goalPos1 = [0.0,  -5.0, 2.0]
+		goalPos2 = [0.0,  5.0, 2.0]
+		goalPos3 = [5.0,  0.0, 2.0]
+		goalPos4 = [-5.0, 0.0, 2.0]
+
+		goalPos = [goalPos1, goalPos2, goalPos3, goalPos4]
+
+		random_choice = random.randint(0,3)
+
+		return goalPos[random_choice]
+
 	def _step(self, action):
 
 		# Input: action
@@ -88,8 +113,9 @@ class Environment():
 		#  ROHIT  #
 		###########
 		nextState = [pose_.position.x, pose_.position.y, pose_.position.z, 
-		             self.goalPos[0], self.goalPos[1], self.goalPos[2], self.battery]
+					 self.goalPos[0], self.goalPos[1], self.goalPos[2], self.battery/100]
 
+		# print('next state : {} {} {} {} {} {}'.format(nextState[0],nextState[1],nextState[2],nextState[3],nextState[4],nextState[5],nextState[6])) 
 		self.plotState = np.vstack((self.plotState, np.asarray(nextState)[0:3]))
 
 		self.prev_state = nextState
@@ -103,7 +129,8 @@ class Environment():
 		self.battery = 200
 		# 2nd: Unpauses simulation
 		self.gazebo.unpauseSim()
-
+		# 
+		self.goalPos = self.getRandomGoal()
 		# 3rd: Don't want to start the agent from the ground
 		self.takeoff()
 
@@ -115,13 +142,14 @@ class Environment():
 		#  ROHIT  #
 		###########
 		initState = [initStateData.pose.pose.position.x, 
-		             initStateData.pose.pose.position.y, 
-		             initStateData.pose.pose.position.z,
-		             self.goalPos[0],
-		             self.goalPos[1],
-		             self.goalPos[2],
-		             self.battery]
-
+					 initStateData.pose.pose.position.y, 
+					 initStateData.pose.pose.position.z,
+					 self.goalPos[0],
+					 self.goalPos[1],
+					 self.goalPos[2],
+					 self.battery/100]
+		# print('init state : {} {} {} {} {} {}'.format(initState[0],initState[1],initState[2],initState[3],initState[4],initState[5],initState[6])) 
+		
 		self.plotState = np.asarray(initState)[0:3]
 		self.prev_state = initState
 		# 5th: pauses simulation

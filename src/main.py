@@ -74,7 +74,6 @@ def train_quad(debug=True):
     actor = Actor_Network(env, sess, n_states)
     critic = Critic_Network(env, sess, n_states)
     replay_buffer = Replay_Buffer()
-
     # try:
     #   actor.model.load_weights("actormodel.h5")
     #   critic.model.load_weights("criticmodel.h5")
@@ -84,7 +83,7 @@ def train_quad(debug=True):
     # except:
     #   print("WOW WOW WOW, Cannot find the weight")
 
-    save_dir = os.path.join(os.getcwd(), 'saved_models_hari_6')
+    save_dir = os.path.join(os.getcwd(), 'saved_models_hari_7')
     if not os.path.isdir(save_dir):
         os.makedirs(save_dir)
     os.chdir(save_dir)
@@ -176,7 +175,8 @@ def train_quad(debug=True):
                 # critic.model.save_weights("criticmodel.h5", overwrite=True)
                 # with open("criticmodel.json", "w") as outfile:
                 #     json.dump(critic.model.to_json(), outfile)
-        print('episode: {} step: {} total reward: {} battery level: {}'.format(epi+1,step,total_reward,env.battery))
+        print('epi: {} step: {} reward: {} battery: {} goal: {}'.format(epi+1,step,total_reward,int(env.battery),env.goalPos))
+        print('-----------------------------------------------')
         ############# Plotting states ############
         # if plot_state:
         #     states = env.plotState
@@ -218,7 +218,7 @@ def test_quad(debug = True):
 
 	vision = False
 
-	eps_count = 3
+	eps_count = 10
 	max_steps = 100000
 	reward = 0
 	done = False
@@ -235,7 +235,7 @@ def test_quad(debug = True):
 	K.set_session(sess)
 
 	# actor, critic and buffer
-	dir_name = 'saved_models_hari_6' 
+	dir_name = 'converged_models_AB_new_network' 
 	load_dir = os.path.join(os.getcwd(), dir_name)
 
 
@@ -248,9 +248,9 @@ def test_quad(debug = True):
 	model_num = []
 	mean_reward = []
 	#not the numbers, they are based on how i saved
-	for i in range(800,1600,50): #(50,1050,50)
+	for i in range(500,2650,50): #(50,1050,50)
 		 #change this manually according to ur saved models
-	
+		# i=2100
 		actor_model_name = '%d_actor_model.h5' %(i)
 		critic_model_name = '%d_critic_model.h5' %(i)       
 		filepath1 = os.path.join(load_dir, actor_model_name)
@@ -300,7 +300,7 @@ def test_quad(debug = True):
 		plt.plot(model_num,mean_reward,'b')
 		plt.pause(0.001)
 
-	save_dir = os.path.join(os.getcwd(), 'saved_models_hari_6')
+	save_dir = os.path.join(os.getcwd(), 'saved_models_hari_7')
 	if not os.path.isdir(save_dir):
 		os.makedirs(save_dir)
 	os.chdir(save_dir)			
