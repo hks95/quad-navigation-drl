@@ -33,20 +33,21 @@ class Critic_Network(object):
 
 		K.set_session(sess)
 
-		# self.model2, self.action2, self.state2 = self.create_critic_network()
-		# self.target_model, self.target_action, self.target_state = self.create_critic_network()
-		dir_name = 'converged_models_AB_new_network' 
-		load_dir = os.path.join(os.getcwd(), dir_name)
-		critic_model_name = '%d_critic_model.h5' %(1100)
-		filepath1 = os.path.join(load_dir, critic_model_name)
-		self.model = load_model(filepath1)
-		self.state = self.model.get_input_at(0)[0]
-		self.action = self.model.get_input_at(0)[1]
+		self.model, self.action, self.state = self.create_critic_network()
+		self.target_model, self.target_action, self.target_state = self.create_critic_network()
+
+		# dir_name = 'converged_models_AB_new_network' 
+		# load_dir = os.path.join(os.getcwd(), dir_name)
+		# critic_model_name = '%d_critic_model.h5' %(1100)
+		# filepath1 = os.path.join(load_dir, critic_model_name)
+		# self.model = load_model(filepath1)
+		# self.state = self.model.get_input_at(0)[0]
+		# self.action = self.model.get_input_at(0)[1]
 
 
-		self.target_model = self.model
-		self.target_state = self.state
-		self.target_action = self.action
+		# self.target_model = self.model
+		# self.target_state = self.state
+		# self.target_action = self.action
 
 		self.action_grads = tf.gradients (self.model.output, self.action)
 		self.sess.run(tf.initialize_all_variables())

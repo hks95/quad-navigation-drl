@@ -235,7 +235,7 @@ def test_quad(debug = True):
 	K.set_session(sess)
 
 	# actor, critic and buffer
-	dir_name = 'converged_models_AB_new_network' 
+	dir_name = 'saved_models_hari_7' 
 	load_dir = os.path.join(os.getcwd(), dir_name)
 
 
@@ -248,7 +248,7 @@ def test_quad(debug = True):
 	model_num = []
 	mean_reward = []
 	#not the numbers, they are based on how i saved
-	for i in range(500,2650,50): #(50,1050,50)
+	for i in range(500,2100,50): #(50,1050,50)
 		 #change this manually according to ur saved models
 		# i=2100
 		actor_model_name = '%d_actor_model.h5' %(i)

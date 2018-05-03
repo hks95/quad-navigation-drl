@@ -26,7 +26,7 @@ class Environment():
 		
 		self.vel_min = -2.0
 		self.vel_max = 2.0
-		self.goalPos = [5.0, -10.0, 2.0]
+		self.goalPos = [-10.0, 10.0, 3.0]
 		self.goal_threshold = 0.5
 		self.crash_reward = -5
 		self.goal_reward = 50 #reduce to 20 #allow more aggressive motions?
@@ -130,7 +130,7 @@ class Environment():
 		# 2nd: Unpauses simulation
 		self.gazebo.unpauseSim()
 		# 
-		self.goalPos = self.getRandomGoal()
+		# self.goalPos = self.getRandomGoal()
 		# 3rd: Don't want to start the agent from the ground
 		self.takeoff()
 

@@ -35,22 +35,22 @@ class Actor_Network(object):
 
         # replay buuffer
         self.replay_buffer = Replay_Buffer(self.buffer_size)
-        dir_name = 'converged_models_AB_new_network' 
-        load_dir = os.path.join(os.getcwd(), dir_name)
-        actor_model_name = '%d_actor_model.h5' %(1100)
-        filepath1 = os.path.join(load_dir, actor_model_name)
-        self.model = load_model(filepath1)
-        self.weights = self.model.trainable_weights
-        self.state = self.model.get_input_at(0)
+        # dir_name = 'converged_models_AB_new_network' 
+        # load_dir = os.path.join(os.getcwd(), dir_name)
+        # actor_model_name = '%d_actor_model.h5' %(1100)
+        # filepath1 = os.path.join(load_dir, actor_model_name)
+        # self.model = load_model(filepath1)
+        # self.weights = self.model.trainable_weights
+        # self.state = self.model.get_input_at(0)
 
-        self.target_model = self.model
-        self.target_weights = self.weights
-        self.target_state = self.state
+        # self.target_model = self.model
+        # self.target_weights = self.weights
+        # self.target_state = self.state
         # print(self.model.summary())
 
         # # create model
-        # self.model2, self.weights2, self.state2 = self.create_actor()
-        # self.target_model, self.target_weights, self.target_state = self.create_actor()
+        self.model, self.weights, self.state = self.create_actor()
+        self.target_model, self.target_weights, self.target_state = self.create_actor()
         # print("self.state {} self.input {}".format(self.state,self.model.inputs))
         #load model
 
