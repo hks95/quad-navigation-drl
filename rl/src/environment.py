@@ -17,7 +17,7 @@ import pdb
 
 class Environment():
 
-    def __init__(self, debug, goalPos):
+    def __init__(self, debug):
 
         self.pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
         self.gazebo = gazebo.GazeboInterface()
@@ -27,14 +27,14 @@ class Environment():
         self.vel_min = -2.0
         self.vel_max = 2.0
 
-        self.goalPos = [0.0, -5.0, 2.0]
+        self.goalPos = [-10.0, 10.0, 3.0]
 
         # TODO: For now getting it from constructor, might shift to reset() later on
-        self.goalPos = goalPos
+        # self.goalPos = goalPos
 
         self.goal_threshold = 1
         self.crash_reward = -5
-        self.goal_reward = 5
+        self.goal_reward = 50
 
         # TODO: Probably need to change this or get it as a parameter
         self.waypoint_rewards = np.array([5, 10, 5, 10, 5])
@@ -103,8 +103,8 @@ class Environment():
         self.prev_state = nextState
 
         # TODO: 
-        if isTerminal:
-            self.goals_completed++
+        # if isTerminal:
+        #     self.goals_completed++
 
         return nextState, reward, isTerminal, []
 

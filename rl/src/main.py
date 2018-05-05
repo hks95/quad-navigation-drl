@@ -21,7 +21,7 @@ from Critic_Network import Critic_Network
 import keras.backend as K
 
 timestr = time.strftime("%Y%m%d-%H%M%S")
-save_path = 'saved_models_rohit_' + timestr
+# save_path = 'saved_models_rohit_' + timestr
 
 def ou_func(x, mu, theta, sigma=0.3):
     return theta * (mu - x) + sigma * np.random.randn(1)
@@ -44,7 +44,7 @@ def train_quad(debug=True):
     vision = False
 
     explore = 100000
-    eps_count = 1000
+    eps_count = 2000
     max_steps = 100000
     reward = 0
     done = False
@@ -80,7 +80,7 @@ def train_quad(debug=True):
 
     # timestr = time.strftime("%Y%m%d-%H%M%S")
     # save_path = 'saved_models_rohit_' + timestr
-    save_dir = os.path.join(os.getcwd(), save_path)
+    save_dir = os.path.join(os.getcwd(), 'results_without_battery')
     if not os.path.isdir(save_dir):
         os.makedirs(save_dir)
     os.chdir(save_dir)
@@ -238,7 +238,7 @@ def test_quad(debug = True):
 
     # actor, critic and buffer
     # save_path = 'saved_models_rohit_20180417-050909'
-    load_dir = os.path.join(os.getcwd(), save_path)
+    load_dir = os.path.join(os.getcwd(), 'results_without_battery')
 
 
     plt.ion()
