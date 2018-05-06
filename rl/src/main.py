@@ -83,7 +83,7 @@ def train_quad(debug=True):
     # except:
     #   print("WOW WOW WOW, Cannot find the weight")
 
-    save_dir = os.path.join(os.getcwd(), 'results_wo_battery_wo_goal')
+    save_dir = os.path.join(os.getcwd(), 'results_wo_batterytermination_wo_goal')
     if not os.path.isdir(save_dir):
         os.makedirs(save_dir)
     os.chdir(save_dir)
@@ -235,7 +235,7 @@ def test_quad(debug = True):
     K.set_session(sess)
 
     # actor, critic and buffer
-    dir_name = 'results_wo_battery_wo_goal' 
+    dir_name = 'results_wo_batterytermination_wo_goal' 
     load_dir = os.path.join(os.getcwd(), dir_name)
 
 
@@ -300,7 +300,7 @@ def test_quad(debug = True):
         plt.plot(model_num,mean_reward,'b')
         plt.pause(0.001)
 
-    save_dir = os.path.join(os.getcwd(), 'saved_models_hari_7')
+    save_dir = os.path.join(os.getcwd(), 'results_wo_batterytermination_wo_goal')
     if not os.path.isdir(save_dir):
         os.makedirs(save_dir)
     os.chdir(save_dir)          

@@ -232,7 +232,7 @@ class Environment():
 			reward = reward + (np.linalg.norm(np.subtract(self.prev_state[0:3], self.goalPos)) - np.linalg.norm(np.subtract(currentPos, self.goalPos)))
 			# print ("dist reward  {} ".format((np.linalg.norm(np.subtract(self.prev_state, self.goalPos)) - np.linalg.norm(np.subtract(currentPos, self.goalPos)))))
 			# print("self.battery_drain(velData) {} ".format(self.battery_drain(velData)))
-			reward = reward + self.battery_drain(velData)/100 #also try scaling just by 10
+			# reward = reward + self.battery_drain(velData)/100 #also try scaling just by 10
 			# reward = 10
 			reachedGoal = False
 			# reward += -error			
@@ -300,10 +300,10 @@ class Environment():
 			print('Unstable quad')
 			done = True
 			reward = self.crash_reward  # TODO: Scale this down?
-		elif self.battery <= 0:
-			print ('battery dead')
-			reward = self.crash_reward
-			done = True
+		# elif self.battery <= 0:
+		# 	print ('battery dead')
+		# 	reward = self.crash_reward
+		# 	done = True
 		else:  # TODO: Should we get a reward if we terminate?
 			reward, reachedGoal = self.getReward(poseData, imuData, velData)
 			if reachedGoal:
