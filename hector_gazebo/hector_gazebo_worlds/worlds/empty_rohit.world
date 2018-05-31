@@ -2,8 +2,8 @@
   <world name='default'>
     <light name='sun' type='directional'>
       <cast_shadows>0</cast_shadows>
-      <pose>0 -5 2 0.1 0.1 0</pose>
-      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <pose>-10 10 3 0 0 0</pose>
+      <diffuse>1 1 1 1</diffuse>
       <specular>0.2 0.2 0.2 1</specular>
       <attenuation>
         <range>1</range>
@@ -13,6 +13,45 @@
       </attenuation>
       <direction>-0.5 0.1 -0.9</direction>
     </light>
+    <!--<light name='sun1' type='directional'>
+      <cast_shadows>0</cast_shadows>
+      <pose>0 -2 2 0.1 0.1 0</pose>
+      <diffuse>1 1 1 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+    <light name='sun2' type='directional'>
+      <cast_shadows>0</cast_shadows>
+      <pose>2 -4 2 0.1 0.1 0</pose>
+      <diffuse>1 1 1 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+    <light name='sun3' type='directional'>
+      <cast_shadows>0</cast_shadows>
+      <pose>-2 -4 2 0.1 0.1 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>-->
     <model name='ground_plane'>
       <static>1</static>
       <link name='link'>

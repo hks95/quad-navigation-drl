@@ -2,15 +2,18 @@
 
 <launch>
 
+  <arg name="gui" value="true"/>
+
   <!-- Start Gazebo with wg world running in (max) realtime -->
   <include file="$(find hector_gazebo_worlds)/launch/rolling_landscape_120m.launch" >
+    <arg name="gui" value="$(arg gui)"/>
   </include>
    
   <!-- Spawn simulated quadrotor uav -->
   <include file="$(find hector_quadrotor_gazebo)/launch/spawn_quadrotor.launch" >
     <arg name="model" value="$(find hector_quadrotor_description)/urdf/quadrotor_hokuyo_utm30lx.gazebo.xacro"/> 
     <arg name="z" value="0.5"/>
-    <arg name="gui" value="false"/>
+    <arg name="gui" value="$(arg gui)"/>
     <arg name="use_sim_time" value="true"/>
   </include>
   
