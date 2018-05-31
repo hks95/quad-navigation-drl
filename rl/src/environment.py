@@ -116,7 +116,7 @@ class Environment():
 		###########
 		#  ROHIT  #
 		###########
-		nextState = [pose_.position.x, pose_.position.y, pose_.position.z]
+		nextState = [pose_.position.x, pose_.position.y, pose_.position.z, self.goalPos[0], self.goalPos[1], self.goalPos[2]]
 
 		self.plotState = np.vstack((self.plotState, np.asarray(nextState)[0:3]))
 
@@ -147,7 +147,10 @@ class Environment():
 		###########
 		initState = [initStateData.pose.pose.position.x, 
 					 initStateData.pose.pose.position.y, 
-					 initStateData.pose.pose.position.z]
+					 initStateData.pose.pose.position.z,
+					 self.goalPos[0],
+					 self.goalPos[1],
+					 self.goalPos[2]]
 		
 		self.plotState = np.asarray(initState)[0:3]
 		self.prev_state = initState
