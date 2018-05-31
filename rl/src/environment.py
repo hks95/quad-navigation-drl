@@ -112,15 +112,13 @@ class Environment():
 		pose_ = poseData.pose.pose
 		reward, isTerminal = self.processData(pose_, imuData, velData, motorData)
 
-		# TODO: Remove comment
-		###########
-		#  ROHIT  #
-		###########
 		nextState = [pose_.position.x, pose_.position.y, pose_.position.z, self.goalPos[0], self.goalPos[1], self.goalPos[2]]
 
 		self.plotState = np.vstack((self.plotState, np.asarray(nextState)[0:3]))
 
 		self.prev_state = nextState
+
+		self.velocity = [velData.vector.x, velData.vector.y, velData.vector.z]
 
 		return nextState, reward, isTerminal, []
 
