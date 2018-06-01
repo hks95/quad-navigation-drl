@@ -64,10 +64,6 @@ def train_quad(debug=True):
     K.set_session(sess)
 
     # actor, critic and buffer
-
-    ###########
-    #  ROHIT  #
-    ###########
     n_states = env.num_states  # 1 is for battery
     goal_pos = env.goalPos
     battery = env.battery

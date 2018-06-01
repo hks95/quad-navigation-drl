@@ -38,8 +38,8 @@ class Environment():
 		self.crash_reward = -5
 		self.goal_reward = 50
 
-		# TODO: Change to @ functions
-		self.num_states = 3
+		# # Environment constants
+		self.num_states = 6
 		self.num_actions = 3
 
 		# Unstability Criteria
@@ -106,11 +106,11 @@ class Environment():
 		self.gazebo.unpauseSim()
 		self.pub.publish(vel)
 		time.sleep(self.running_step)
-		poseData, imuData, velData, motorData = self.takeObservation()
+		poseData, imuData, velData = self.takeObservation()
 		self.gazebo.pauseSim()
 
 		pose_ = poseData.pose.pose
-		reward, isTerminal = self.processData(pose_, imuData, velData, motorData)
+		reward, isTerminal = self.processData(pose_, imuData, velData)
 
 		nextState = [pose_.position.x, pose_.position.y, pose_.position.z, self.goalPos[0], self.goalPos[1], self.goalPos[2]]
 
@@ -137,17 +137,13 @@ class Environment():
 		self.takeoff()
 
 		# 4th: Get init state
-		initStateData, _, _, _ = self.takeObservation()
+		initStateData, _, _ = self.takeObservation()
 
-		# TODO: Remove comment
-		###########
-		#  ROHIT  #
-		###########
 		initState = [initStateData.pose.pose.position.x, 
 					 initStateData.pose.pose.position.y, 
-					 initStateData.pose.pose.position.z,
-					 self.goalPos[0],
-					 self.goalPos[1],
+					 initStateData.pose.pose.position.z, 
+					 self.goalPos[0], 
+					 self.goalPos[1], 
 					 self.goalPos[2]]
 		
 		self.plotState = np.asarray(initState)[0:3]
@@ -194,7 +190,7 @@ class Environment():
 		  except:
 			  rospy.loginfo("Current drone imu not ready yet, retrying to get robot imu")
 
-		return poseData, imuData, velData, motorData
+		return poseData, imuData, velData
 
 	def _distance(self, pose):
 
@@ -272,7 +268,7 @@ class Environment():
 		
 		return X, Y, Z
 
-	def processData(self, poseData, imuData, velData, motorData):
+	def processData(self, poseData, imuData, velData):
 		'''
 		Process the observed data
 		'''
@@ -335,4 +331,13 @@ class Environment():
 			print('Take-off sequence completed')
 
 		return
+
+		
+	import signal, sys
+	def signal_handler(signal, frame):
+	    reason = 'Because'
+	    rospy.signal_shutdown(reason)
+	    sys.exit(0)
+
+	signal.signal(signal.SIGINT, signal_handler)
 
