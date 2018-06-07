@@ -35,3 +35,11 @@ class GazeboInterface():
         except rospy.ServiceException as e:
             print ("/gazebo/reset_simulation service call failed")
 
+    import signal, sys
+    def signal_handler(signal, frame):
+        reason = 'Because'
+        rospy.signal_shutdown(reason)
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, signal_handler)
+

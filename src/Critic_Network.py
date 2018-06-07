@@ -3,9 +3,7 @@ import numpy as np
 import math
 import os
 import pdb
-# from keras.initializations import normal, identity
 from keras.models import model_from_json, load_model
-# from keras.engine.training import collect_trainable_weights
 from keras.models import Sequential
 from keras.layers import Dense, Flatten, Input, merge, Lambda, Activation
 from keras.models import Sequential, Model
@@ -15,7 +13,9 @@ import tensorflow as tf
 
 
 class Critic_Network(object):
+
 	def __init__(self, env, sess, num_states, batch_size=32, tau=0.125, learning_rate=0.001):
+
 		self.env = env
 		self.sess = sess
 		self.bs = batch_size
@@ -33,26 +33,13 @@ class Critic_Network(object):
 
 		K.set_session(sess)
 
+		# create model
 		self.model, self.action, self.state = self.create_critic_network()
 		self.target_model, self.target_action, self.target_state = self.create_critic_network()
 
-		# dir_name = 'converged_models_AB_new_network' 
-		# load_dir = os.path.join(os.getcwd(), dir_name)
-		# critic_model_name = '%d_critic_model.h5' %(1100)
-		# filepath1 = os.path.join(load_dir, critic_model_name)
-		# self.model = load_model(filepath1)
-		# self.state = self.model.get_input_at(0)[0]
-		# self.action = self.model.get_input_at(0)[1]
-
-
-		# self.target_model = self.model
-		# self.target_state = self.state
-		# self.target_action = self.action
-
+		# gradients
 		self.action_grads = tf.gradients (self.model.output, self.action)
 		self.sess.run(tf.initialize_all_variables())
-		# .get_output_at(0)
-		# get_input_shape_at(0)
 
 	def create_critic_network(self):
 
@@ -80,10 +67,7 @@ class Critic_Network(object):
 
 
 	def gradients(self, states, actions):
-		return self.sess.run(self.action_grads, feed_dict = {
-			self.state: states,
-			self.action: actions
-		})[0]
+		return self.sess.run(self.action_grads, feed_dict = { self.state: states, self.action: actions })[0]
 
 	def target_train(self):
 		critic_weights = self.model.get_weights()
