@@ -26,7 +26,7 @@ class Environment():
 		
 		self.vel_min = -2.0
 		self.vel_max = 2.0
-		self.goalPos = [-10.0, 10.0, 3.0]
+		self.goalPos = [-10, 10, 3]
 		self.goal_threshold = 0.5
 		self.crash_reward = -5
 		self.goal_reward = 50 #reduce to 20 #allow more aggressive motions?
@@ -113,7 +113,8 @@ class Environment():
 		#  ROHIT  #
 		###########
 		nextState = [pose_.position.x, pose_.position.y, pose_.position.z, 
-					 self.goalPos[0], self.goalPos[1], self.goalPos[2], self.battery/100]
+					 self.goalPos[0], self.goalPos[1], self.goalPos[2]]
+					 # , self.battery/100]
 
 		# print('next state : {} {} {} {} {} {}'.format(nextState[0],nextState[1],nextState[2],nextState[3],nextState[4],nextState[5],nextState[6])) 
 		self.plotState = np.vstack((self.plotState, np.asarray(nextState)[0:3]))
@@ -146,8 +147,9 @@ class Environment():
 					 initStateData.pose.pose.position.z,
 					 self.goalPos[0],
 					 self.goalPos[1],
-					 self.goalPos[2],
-					 self.battery/100]
+					 self.goalPos[2]]
+					 # ,
+					 # self.battery/100]
 		# print('init state : {} {} {} {} {} {}'.format(initState[0],initState[1],initState[2],initState[3],initState[4],initState[5],initState[6])) 
 		
 		self.plotState = np.asarray(initState)[0:3]
@@ -237,7 +239,7 @@ class Environment():
 			reward = reward + (np.linalg.norm(np.subtract(self.prev_state[0:3], self.goalPos)) - np.linalg.norm(np.subtract(currentPos, self.goalPos)))
 			# print ("dist reward  {} ".format((np.linalg.norm(np.subtract(self.prev_state, self.goalPos)) - np.linalg.norm(np.subtract(currentPos, self.goalPos)))))
 			# print("self.battery_drain(velData) {} ".format(self.battery_drain(velData)))
-			reward = reward + self.battery_drain(velData)/100 #also try scaling just by 10
+			# reward = reward + self.battery_drain(velData)/100 #also try scaling just by 10
 			# reward = 10
 			reachedGoal = False
 			# reward += -error			
@@ -305,10 +307,10 @@ class Environment():
 			print('Unstable quad')
 			done = True
 			reward = self.crash_reward  # TODO: Scale this down?
-		elif self.battery <= 0:
-			print ('battery dead')
-			reward = self.crash_reward
-			done = True
+		# elif self.battery <= 0:
+		# 	print ('battery dead')
+		# 	reward = self.crash_reward
+		# 	done = True
 		else:  # TODO: Should we get a reward if we terminate?
 			reward, reachedGoal = self.getReward(poseData, imuData, velData)
 			if reachedGoal:

@@ -70,7 +70,7 @@ class Actor_Network(object):
         h3 = Dense(self.hidden_dim, activation = 'relu')(h2)
         h4 = Dense(self.hidden_dim, activation = 'relu')(h3)
 
-        out = Dense(self.act_dim, activation='tanh')(h4)
+        out = Dense(self.act_dim, activation='tanh')(h3)
 
         model = Model(input = obs_in, output = out)
         # no loss function for actor apparently
